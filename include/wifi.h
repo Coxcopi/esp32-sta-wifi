@@ -1,12 +1,20 @@
-#pragma once
+#ifndef WIFI_H
+#define WIFI_H
 
-#include "esp_event.h"
 #include "esp_err.h"
 
-esp_err_t wifi_init();
-esp_err_t wifi_connect(const char* ssid, const char* password);
-esp_err_t wifi_disconnect();
-esp_err_t wifi_deinit();
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
-void wifi_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
+esp_err_t sta_wifi_init(void);
+esp_err_t sta_wifi_connect(const char *ssid, const char *password);
+esp_err_t sta_wifi_disconnect(void);
+esp_err_t sta_wifi_deinit(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // WIFI_H

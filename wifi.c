@@ -5,12 +5,12 @@
 #include "esp_event.h"
 #include "freertos/FreeRTOS.h"
 
-constexpr const char *TAG = "wifi";
+static const char *TAG = "wifi";
 
-constexpr int WIFI_MAX_RETRIES = 10;
+static const int WIFI_MAX_RETRIES = 10;
 
-constexpr EventBits_t WIFI_CONNECTED_BIT = BIT0;
-constexpr EventBits_t WIFI_FAIL_BIT = BIT1;
+static const EventBits_t WIFI_CONNECTED_BIT = BIT0;
+static const EventBits_t WIFI_FAIL_BIT = BIT1;
 
 static esp_netif_t *netif = NULL;
 static esp_event_handler_instance_t ip_event_handler;
@@ -19,7 +19,7 @@ static EventGroupHandle_t s_wifi_event_group = NULL;
 
 static int wifi_retry_count = 0;
 
-void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+static void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     switch (event_id)
     {
@@ -47,7 +47,7 @@ void ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void 
     }
 }
 
-void wifi_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+static void wifi_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     switch (event_id)
     {
@@ -88,7 +88,7 @@ void wifi_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, voi
     }
 }
 
-esp_err_t wifi_init()
+esp_err_t sta_wifi_init()
 {
     // Init non-volatile storage
     esp_err_t err = nvs_flash_init();
@@ -163,12 +163,12 @@ esp_err_t wifi_init()
     return ESP_OK;
 }
 
-esp_err_t wifi_connect(const char *ssid, const char *password)
+esp_err_t sta_wifi_connect(const char *ssid, const char *password)
 {
-    wifi_config_t cfg = {};
+    wifi_config_t cfg = {0};
     cfg.sta.threshold.authmode = WIFI_AUTH_OPEN;
-    strlcpy(reinterpret_cast<char *>(cfg.sta.ssid), ssid, sizeof(cfg.sta.ssid));
-    strlcpy(reinterpret_cast<char *>(cfg.sta.password), password, sizeof(cfg.sta.password));
+    strlcpy((char *)cfg.sta.ssid, ssid, sizeof(cfg.sta.ssid));
+    strlcpy((char *)cfg.sta.password, password, sizeof(cfg.sta.password));
 
     ESP_RETURN_ON_ERROR(
         esp_wifi_set_ps(WIFI_PS_NONE),
@@ -190,7 +190,7 @@ esp_err_t wifi_connect(const char *ssid, const char *password)
         TAG,
         "Failed to set wifi config");
 
-    ESP_LOGI(TAG, "Connecting to WiFi network %s", cfg.sta.ssid);
+    ESP_LOGI(TAG, "Connecting to WiFi network %s", (char *)cfg.sta.ssid);
 
     ESP_RETURN_ON_ERROR(
         esp_wifi_start(),
@@ -224,13 +224,15 @@ esp_err_t wifi_connect(const char *ssid, const char *password)
     return ESP_FAIL;
 }
 
-esp_err_t wifi_disconnect()
+esp_err_t sta_wifi_disconnect()
 {
-    xEventGroupClearBits(s_wifi_event_group, 0);
+    xEventGroupClearBits(
+        s_wifi_event_group,
+        WIFI_CONNECTED_BIT | WIFI_FAIL_BIT);
     return esp_wifi_disconnect();
 }
 
-esp_err_t wifi_deinit()
+esp_err_t sta_wifi_deinit()
 {
     ESP_RETURN_ON_ERROR(
         esp_wifi_stop(),
