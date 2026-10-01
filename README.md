@@ -1,4 +1,5 @@
 **Installation**
+
 Add this to idf_components.yml
 ```yaml
 dependencies:
