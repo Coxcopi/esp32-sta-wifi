@@ -23,7 +23,7 @@ constexpr const WIFI_PSW = "supersecretpassword";
 
 void app_main(void)
 {
-  ESP_ERROR_CHECK(wifi_init());
-  ESP_ERROR_CHECK(wifi_connect(WIFI_SSID, WIFI_PSW));
+  ESP_ERROR_CHECK(sta_wifi_init());
+  ESP_ERROR_CHECK(sta_wifi_connect(WIFI_SSID, WIFI_PSW));
 }
 ```
