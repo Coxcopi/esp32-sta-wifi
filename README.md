@@ -1,5 +1,15 @@
-Example usage:
+**Installation**
+Add this to idf_components.yml
+```yaml
+dependencies:
+  wifi:
+    git: https://github.com/Coxcopi/esp32-sta-wifi.git
+    version: main # or a specific version tag like 1.0.0
+```
+and run `idf.py reconfigure`.
 
+
+**Example usage**
 ```C
 // main.c
 
