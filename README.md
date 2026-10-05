@@ -18,8 +18,8 @@ and run `idf.py reconfigure`.
 #include "esp_check.h"
 #include "wifi.h"
 
-constexpr const WIFI_SSID = "MyWiFiNetwork";
-constexpr const WIFI_PSW = "supersecretpassword";
+static const char *WIFI_SSID = "MyWiFiNetwork";
+static const char *WIFI_PSW = "supersecretpassword";
 
 void app_main(void)
 {
